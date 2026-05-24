@@ -1,0 +1,14 @@
+# Copy this file to `android/key.properties` and fill in the values from your
+# release keystore. Never commit the real key.properties or the .jks file.
+#
+# Generate a keystore with:
+#   keytool -genkey -v -keystore ~/kendaraanku-upload.jks \
+#     -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+#
+# Then point storeFile below at the absolute path to the .jks (or a path
+# relative to the `android/` folder).
+
+storePassword=CHANGE_ME
+keyPassword=CHANGE_ME
+keyAlias=upload
+storeFile=/absolute/path/to/kendaraanku-upload.jks

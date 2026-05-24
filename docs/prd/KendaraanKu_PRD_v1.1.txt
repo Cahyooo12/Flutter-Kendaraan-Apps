@@ -1,0 +1,765 @@
+﻿PRODUCT REQUIREMENTS DOCUMENT
+KendaraanKu
+Aplikasi Pencatatan Kendaraan Pribadi — Full Offline
+
+
+
+
+SharingSession JagoFlutter — Free Event
+Demo Program + Bonus Source Code
+
+
+Prepared by: JagoFlutter Academy
+Version 1.1 — Mei 2026
+Flutter + BLoC + Sqflite + SharedPreferences
+1. Executive Summary
+KendaraanKu adalah aplikasi mobile Flutter untuk mencatat seluruh aktivitas dan pengeluaran kendaraan pribadi secara offline. Aplikasi ini dirancang sebagai demo program dan bonus source code untuk event SharingSession JagoFlutter.
+
+
+Highlights:
+* Multi-Kendaraan: Kelola motor, mobil, atau kendaraan lain dalam satu aplikasi
+* Pencatatan BBM: Catat pengisian bensin lengkap dengan harga, liter, odometer, dan lokasi SPBU
+* Pencatatan Servis: Catat riwayat servis, ganti oli, ganti ban, dll dengan foto kwitansi
+* Scan Nota/Kwitansi: Ambil foto struk/kwitansi, otomatis tersimpan sebagai lampiran
+* Statistik & Grafik: Lihat pengeluaran per kendaraan, konsumsi BBM rata-rata, tren bulanan
+* 100% Offline: Semua data tersimpan lokal di device menggunakan SQLite
+* Export Data: Export laporan ke PDF atau CSV untuk dokumentasi pribadi
+
+
+Filosofi Teknis:
+Source code ini sengaja dibuat simpel dan straightforward. Tidak menggunakan dependency injection framework, tidak pakai declarative router, tidak pakai abstraksi berlebihan. Tujuannya agar peserta free event bisa langsung baca, paham, dan modifikasi tanpa harus belajar 5 library tambahan dulu. Arsitektur BLoC sederhana (data → presentation) sudah lebih dari cukup untuk aplikasi skala ini.
+2. Tech Stack
+Layer
+	Teknologi
+	Keterangan
+	Framework
+	Flutter 3.x (Stable)
+	Cross-platform mobile (Android & iOS)
+	State Management
+	flutter_bloc + Freezed + Dartz
+	BLoC pattern standar JagoFlutter
+	Local Database
+	Sqflite
+	SQLite wrapper untuk data utama (kendaraan, BBM, servis)
+	Settings Storage
+	SharedPreferences
+	Simpan settings ringan: theme, satuan, mata uang
+	Image Storage
+	Local File System
+	Foto nota/kwitansi disimpan di app directory
+	Camera/Gallery
+	image_picker
+	Ambil foto atau pilih dari galeri
+	Image Processing
+	image (dart)
+	Compress & resize foto sebelum simpan
+	Charts
+	fl_chart
+	Grafik pengeluaran dan konsumsi BBM
+	PDF Export
+	pdf + printing
+	Generate laporan PDF dari data lokal
+	CSV Export
+	csv
+	Export data ke format spreadsheet
+	Navigation
+	Navigator v1 (push/pop)
+	Navigator.push, Navigator.pop — simpel dan familiar
+	Path Helper
+	path_provider
+	Akses app documents directory
+	
+
+Yang Sengaja TIDAK Dipakai:
+Library
+	Alasan Tidak Pakai
+	Hive
+	SharedPreferences sudah cukup untuk settings. Data relasional pakai SQLite.
+	go_router / auto_route
+	Navigator.push/pop lebih mudah dipahami pemula. Tidak ada deep linking requirement.
+	get_it + injectable
+	Dependency injection manual via constructor sudah cukup untuk scope ini.
+	Riverpod / Provider
+	Konsisten dengan BLoC sebagai state management utama JagoFlutter.
+	Google ML Kit / OCR
+	Over-scope untuk free event. Scan nota = foto lampiran saja.
+	3. Arsitektur Aplikasi
+3.1 BLoC Architecture (Data → Presentation)
+Arsitektur simpel 2 layer tanpa abstraksi berlebihan:
+
+
+Layer
+	Isi
+	Contoh
+	Data
+	Models, Database Helper, Repositories
+	VehicleModel, DatabaseHelper, VehicleRepository
+	Presentation
+	Pages, Widgets, BLoCs
+	HomePage, VehicleCard, VehicleBloc
+	
+
+Tidak ada domain layer terpisah, tidak ada use case class, tidak ada repository interface/abstract. Repository langsung berisi logic query SQLite dan dipanggil oleh BLoC. Simpel, mudah di-trace, mudah di-debug.
+3.2 Folder Structure
+
+
+lib/
+├── data/
+│   ├── models/          → vehicle_model.dart, fuel_log_model.dart, ...
+│   ├── repositories/     → vehicle_repository.dart, fuel_log_repository.dart, ...
+│   └── database_helper.dart  → singleton SQLite helper
+├── presentation/
+│   ├── blocs/           → vehicle_bloc.dart, fuel_log_bloc.dart, ...
+│   ├── pages/           → home_page.dart, add_vehicle_page.dart, ...
+│   └── widgets/         → vehicle_card.dart, fuel_log_tile.dart, ...
+├── core/
+│   ├── constants.dart    → app colors, strings, enums
+│   ├── theme.dart        → light & dark ThemeData
+│   └── utils.dart        → formatters, calculators
+└── main.dart
+3.3 Alur Data
+Alur data sangat linear dan mudah di-trace:
+
+
+User tap tombol → Page dispatch Event ke BLoC
+                  → BLoC panggil Repository method
+                  → Repository execute query SQLite via DatabaseHelper
+                  → Repository return data (model / List<model>)
+                  → BLoC emit State baru
+                  → BlocBuilder rebuild UI
+
+
+Tidak ada abstraksi tambahan. BLoC langsung instantiate Repository, Repository langsung pakai DatabaseHelper.getInstance(). Dependency injection cukup via constructor parameter biasa.
+3.4 Navigation Pattern
+Menggunakan Navigator v1 standar Flutter — push, pop, pushReplacement:
+
+
+// Navigasi ke halaman detail
+Navigator.push(
+  context,
+  MaterialPageRoute(
+    builder: (context) => VehicleDetailPage(vehicleId: id),
+  ),
+);
+
+
+// Kembali dengan result
+final result = await Navigator.push<bool>(
+  context,
+  MaterialPageRoute(
+    builder: (context) => AddFuelLogPage(vehicleId: id),
+  ),
+);
+if (result == true) { /* refresh data */ }
+3.5 Database Schema (SQLite)
+Aplikasi menggunakan 4 tabel utama:
+
+
+Tabel: vehicles
+Kolom
+	Tipe
+	Keterangan
+	id
+	INTEGER PK
+	Auto increment
+	name
+	TEXT
+	Nama kendaraan (misal: Vario 125)
+	type
+	TEXT
+	motor / mobil / lainnya
+	brand
+	TEXT
+	Merek (Honda, Toyota, dll)
+	model
+	TEXT
+	Model spesifik
+	year
+	INTEGER
+	Tahun pembuatan
+	plate_number
+	TEXT
+	Nomor plat
+	color
+	TEXT
+	Warna kendaraan
+	image_path
+	TEXT?
+	Foto kendaraan (nullable)
+	initial_odometer
+	REAL
+	Odometer awal saat didaftarkan
+	fuel_type
+	TEXT
+	Pertalite, Pertamax, Solar, dll
+	tank_capacity
+	REAL?
+	Kapasitas tangki (liter)
+	is_active
+	INTEGER
+	1 = aktif, 0 = diarsipkan
+	notes
+	TEXT?
+	Catatan tambahan
+	created_at
+	TEXT
+	ISO 8601 timestamp
+	updated_at
+	TEXT
+	ISO 8601 timestamp
+	
+
+Tabel: fuel_logs
+Kolom
+	Tipe
+	Keterangan
+	id
+	INTEGER PK
+	Auto increment
+	vehicle_id
+	INTEGER FK
+	Referensi ke vehicles.id
+	date
+	TEXT
+	Tanggal pengisian
+	odometer
+	REAL
+	Pembacaan odometer saat isi
+	liters
+	REAL
+	Jumlah liter
+	price_per_liter
+	REAL
+	Harga per liter
+	total_cost
+	REAL
+	Total biaya (auto-calculate)
+	fuel_type
+	TEXT
+	Jenis BBM
+	station_name
+	TEXT?
+	Nama SPBU (opsional)
+	is_full_tank
+	INTEGER
+	1 = full tank, 0 = partial
+	receipt_image_path
+	TEXT?
+	Path foto struk
+	notes
+	TEXT?
+	Catatan tambahan
+	created_at
+	TEXT
+	ISO 8601 timestamp
+	
+
+Tabel: service_logs
+Kolom
+	Tipe
+	Keterangan
+	id
+	INTEGER PK
+	Auto increment
+	vehicle_id
+	INTEGER FK
+	Referensi ke vehicles.id
+	date
+	TEXT
+	Tanggal servis
+	odometer
+	REAL?
+	Pembacaan odometer (opsional)
+	service_type
+	TEXT
+	Kategori: oli, ban, tune-up, dll
+	description
+	TEXT
+	Deskripsi pekerjaan
+	cost
+	REAL
+	Total biaya servis
+	workshop_name
+	TEXT?
+	Nama bengkel
+	receipt_image_path
+	TEXT?
+	Path foto kwitansi
+	next_service_odometer
+	REAL?
+	Reminder odometer berikutnya
+	next_service_date
+	TEXT?
+	Reminder tanggal berikutnya
+	notes
+	TEXT?
+	Catatan tambahan
+	created_at
+	TEXT
+	ISO 8601 timestamp
+	
+
+Tabel: expense_categories
+Kolom
+	Tipe
+	Keterangan
+	id
+	INTEGER PK
+	Auto increment
+	name
+	TEXT
+	Nama kategori
+	icon
+	TEXT
+	Icon identifier (Material Icons name)
+	is_default
+	INTEGER
+	1 = bawaan app, 0 = custom user
+	
+
+DatabaseHelper Pattern:
+class DatabaseHelper {
+  static DatabaseHelper? _instance;
+  static Database? _database;
+
+
+  DatabaseHelper._();
+
+
+  static DatabaseHelper getInstance() {
+    _instance ??= DatabaseHelper._();
+    return _instance!;
+  }
+
+
+  Future<Database> get database async {
+    _database ??= await _initDatabase();
+    return _database!;
+  }
+
+
+  Future<Database> _initDatabase() async {
+    final path = join(await getDatabasesPath(), 'kendaraanku.db');
+    return openDatabase(path, version: 1, onCreate: _onCreate);
+  }
+}
+________________
+
+
+4. Detail Fitur
+4.1 Manajemen Kendaraan
+Fitur utama untuk mengelola daftar kendaraan milik user.
+
+
+Fungsionalitas:
+1. Tambah kendaraan baru dengan form lengkap (nama, tipe, merek, model, tahun, plat, warna)
+2. Foto kendaraan dari kamera atau galeri
+3. Edit informasi kendaraan
+4. Arsipkan kendaraan yang sudah dijual (soft delete, data historis tetap ada)
+5. Set kendaraan default/utama untuk quick entry
+6. Dashboard per kendaraan: ringkasan total pengeluaran, rata-rata konsumsi BBM, servis terakhir
+
+
+UI/UX:
+* Home screen menampilkan card list kendaraan aktif dengan foto thumbnail
+* Swipe card untuk aksi cepat (isi BBM, catat servis)
+* Tap card untuk masuk ke detail/dashboard kendaraan
+* FAB (+) untuk tambah kendaraan baru
+* Dropdown filter: Semua / Motor / Mobil
+4.2 Pencatatan BBM
+Fitur untuk mencatat setiap pengisian bahan bakar.
+
+
+Fungsionalitas:
+1. Form input: tanggal, odometer, liter, harga/liter, jenis BBM, nama SPBU
+2. Auto-calculate total biaya dari liter × harga
+3. Toggle full tank / partial fill (mempengaruhi perhitungan konsumsi)
+4. Scan/foto struk SPBU — tersimpan sebagai lampiran
+5. Kalkulasi otomatis: km/liter, biaya/km sejak pengisian terakhir
+6. Riwayat pengisian dengan ListView dan filter tanggal
+
+
+Logika Konsumsi BBM:
+Perhitungan konsumsi menggunakan metode full-tank-to-full-tank:
+* Konsumsi = (Odometer sekarang − Odometer pengisian full tank sebelumnya) / Liter sekarang
+* Jika pengisian partial, data dikumpulkan sampai pengisian full tank berikutnya
+* Rata-rata konsumsi dihitung dari semua record full-tank yang valid
+4.3 Pencatatan Servis
+Fitur untuk mencatat semua aktivitas servis dan perawatan kendaraan.
+
+
+Kategori Servis (Default):
+* Ganti Oli Mesin
+* Ganti Oli Gardan (motor matic)
+* Ganti Ban
+* Tune Up / Servis Rutin
+* Ganti Aki
+* Ganti Kampas Rem
+* Ganti V-Belt (motor matic)
+* Servis AC (mobil)
+* Perpanjang STNK / Pajak Kendaraan
+* Lain-lain (custom input)
+
+
+Fungsionalitas:
+1. Form input: tanggal, kategori, deskripsi, biaya, nama bengkel, odometer
+2. Scan/foto kwitansi bengkel — tersimpan sebagai lampiran
+3. Set reminder: next service di odometer X atau tanggal Y
+4. Riwayat servis per kendaraan dengan filter kategori
+5. User bisa tambah kategori servis custom
+4.4 Scan Nota / Kwitansi
+Fitur capture foto struk/kwitansi yang terintegrasi dengan pencatatan BBM dan servis. Bukan OCR — murni foto lampiran.
+
+
+Alur Kerja:
+1. Saat input BBM atau servis, tap tombol kamera
+2. Pilih: Ambil Foto (kamera) atau Pilih dari Galeri
+3. Preview foto sebelum simpan
+4. Foto di-compress (max 1280px, quality 80%) lalu disimpan ke app directory
+5. Nama file terstruktur: {vehicle_id}_{type}_{timestamp}.jpg
+6. Foto bisa dilihat kembali dari detail record BBM/servis (tap untuk fullscreen)
+7. Galeri semua nota per kendaraan (GridView)
+
+
+Implementasi:
+// Ambil & compress foto
+final picker = ImagePicker();
+final XFile? photo = await picker.pickImage(
+  source: ImageSource.camera,
+  maxWidth: 1280,
+  imageQuality: 80,
+);
+
+
+// Simpan ke app directory
+final appDir = await getApplicationDocumentsDirectory();
+final fileName = '${vehicleId}_fuel_${DateTime.now().millisecondsSinceEpoch}.jpg';
+final savedFile = await File(photo!.path).copy('${appDir.path}/$fileName');
+4.5 Dashboard & Statistik
+Visualisasi data pengeluaran dan konsumsi kendaraan menggunakan fl_chart.
+
+
+Home Dashboard:
+* Total pengeluaran bulan ini (semua kendaraan)
+* Total pengeluaran tahun ini
+* Kendaraan dengan pengeluaran tertinggi bulan ini
+* Reminder servis yang akan datang
+
+
+Dashboard Per Kendaraan:
+* Summary card: total BBM, total servis, total keseluruhan
+* Line chart: tren pengeluaran bulanan (BBM vs Servis)
+* Bar chart: konsumsi BBM per bulan (km/liter)
+* Pie chart: distribusi jenis pengeluaran
+* Info card: rata-rata biaya/km, rata-rata km/liter, total jarak tempuh
+* Servis terakhir dan reminder berikutnya
+
+
+Filter Periode:
+* Minggu ini, Bulan ini, 3 Bulan, 6 Bulan, Tahun ini, Custom range
+* Semua grafik responsif terhadap filter
+4.6 Export Data
+Format Export:
+* PDF Report: Laporan lengkap per kendaraan dengan tabel dan summary. Generate pakai package pdf.
+* CSV: Data mentah fuel_logs dan service_logs. Bisa dibuka di Excel/Google Sheets.
+
+
+Opsi Export:
+* Export per kendaraan atau semua kendaraan
+* Filter periode tanggal
+* Share langsung via share sheet (WhatsApp, email, dll)
+* Simpan ke storage device
+4.7 Settings
+Disimpan menggunakan SharedPreferences (key-value sederhana):
+
+
+Key
+	Tipe
+	Default
+	Keterangan
+	theme_mode
+	String
+	system
+	light / dark / system
+	currency
+	String
+	IDR
+	Mata uang display
+	distance_unit
+	String
+	km
+	km / mil
+	volume_unit
+	String
+	liter
+	liter / galon
+	default_vehicle_id
+	int
+	-1
+	ID kendaraan default, -1 = belum set
+	
+
+Fitur Settings Lainnya:
+* Backup database: Copy file .db ke storage / share via share sheet
+* Restore database: Import file .db, replace database aktif
+* Reset semua data (dengan dialog konfirmasi ganda)
+________________
+
+
+5. BLoC State Management
+Setiap fitur utama memiliki BLoC sendiri. Pattern konsisten: Event masuk, BLoC proses via Repository, emit State baru.
+
+
+BLoC
+	State (Freezed)
+	Events
+	VehicleBloc
+	initial, loading, loaded, error
+	LoadVehicles, AddVehicle, UpdateVehicle, ArchiveVehicle, SetDefault
+	FuelLogBloc
+	initial, loading, loaded, error
+	LoadFuelLogs, AddFuelLog, UpdateFuelLog, DeleteFuelLog, FilterByDate
+	ServiceLogBloc
+	initial, loading, loaded, error
+	LoadServiceLogs, AddServiceLog, UpdateServiceLog, DeleteServiceLog, FilterByCategory
+	DashboardBloc
+	initial, loading, loaded, error
+	LoadDashboard, ChangePeriod, ChangeVehicle
+	ImageBloc
+	initial, picking, picked, error
+	CaptureImage, PickFromGallery, DeleteImage
+	SettingsBloc
+	SettingsState (single state)
+	LoadSettings, UpdateTheme, UpdateCurrency, UpdateUnit
+	
+
+Contoh Lengkap — FuelLogBloc:
+// === Event (Freezed) ===
+@freezed
+class FuelLogEvent with _$FuelLogEvent {
+  const factory FuelLogEvent.load(int vehicleId) = _Load;
+  const factory FuelLogEvent.add(FuelLogModel fuelLog) = _Add;
+  const factory FuelLogEvent.delete(int id) = _Delete;
+  const factory FuelLogEvent.filterByDate(DateTime start, DateTime end) = _Filter;
+}
+
+
+// === State (Freezed) ===
+@freezed
+class FuelLogState with _$FuelLogState {
+  const factory FuelLogState.initial() = _Initial;
+  const factory FuelLogState.loading() = _Loading;
+  const factory FuelLogState.loaded(
+    List<FuelLogModel> logs,
+    FuelStats stats,
+  ) = _Loaded;
+  const factory FuelLogState.error(String message) = _Error;
+}
+
+
+// === BLoC ===
+class FuelLogBloc extends Bloc<FuelLogEvent, FuelLogState> {
+  final FuelLogRepository _repository;  // inject via constructor
+
+
+  FuelLogBloc(this._repository) : super(const FuelLogState.initial()) {
+    on<_Load>(_onLoad);
+    on<_Add>(_onAdd);
+    on<_Delete>(_onDelete);
+  }
+
+
+  Future<void> _onLoad(_Load event, Emitter<FuelLogState> emit) async {
+    emit(const FuelLogState.loading());
+    final result = await _repository.getByVehicle(event.vehicleId);
+    result.fold(
+      (failure) => emit(FuelLogState.error(failure.message)),
+      (logs) {
+        final stats = _calculateStats(logs);
+        emit(FuelLogState.loaded(logs, stats));
+      },
+    );
+  }
+}
+
+
+Cara Pakai di Page (tanpa DI framework):
+// Di page, instantiate langsung
+class FuelLogPage extends StatelessWidget {
+  final int vehicleId;
+  const FuelLogPage({required this.vehicleId});
+
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => FuelLogBloc(FuelLogRepository())
+        ..add(FuelLogEvent.load(vehicleId)),
+      child: _FuelLogView(),
+    );
+  }
+}
+________________
+
+
+6. User Flow Utama
+6.1 First Time User
+1. Splash screen dengan branding KendaraanKu
+2. Onboarding singkat (2-3 slide): Kelola kendaraan, Catat pengeluaran, Lihat statistik
+3. Langsung diarahkan ke form Tambah Kendaraan Pertama
+4. Setelah simpan, masuk ke Home Dashboard
+6.2 Daily Use — Isi BBM
+User habis isi bensin di SPBU:
+* Buka app → Tap kendaraan → Tap "Isi BBM"
+* Isi form: liter, harga, odometer
+* Opsional: foto struk dari kamera
+* Simpan → otomatis hitung total dan konsumsi
+* Estimasi waktu: 30 detik – 1 menit
+6.3 Servis Kendaraan
+User habis servis di bengkel:
+* Buka app → Tap kendaraan → Tap "Catat Servis"
+* Pilih kategori, isi detail dan biaya
+* Foto kwitansi bengkel
+* Set reminder servis berikutnya (opsional)
+* Simpan
+6.4 Navigasi Antar Halaman
+Semua navigasi menggunakan Navigator.push / pop standar:
+
+
+Dari
+	Ke
+	Cara
+	Home
+	Vehicle Detail
+	Navigator.push(MaterialPageRoute(...))
+	Vehicle Detail
+	Add Fuel Log
+	Navigator.push → await result
+	Vehicle Detail
+	Add Service Log
+	Navigator.push → await result
+	Vehicle Detail
+	Dashboard/Stats
+	Navigator.push
+	Any Page
+	Settings
+	Navigator.push
+	Add Form
+	Camera/Gallery
+	image_picker (modal)
+	Settings
+	Backup/Restore
+	Navigator.push
+	Any Form
+	Back (with result)
+	Navigator.pop(true)
+	________________
+
+
+7. Scope & Batasan untuk Free Event
+Termasuk (In Scope):
+* CRUD lengkap untuk kendaraan, BBM, dan servis
+* Foto nota/kwitansi (camera + gallery, compressed)
+* Dashboard dengan grafik dasar (fl_chart)
+* Export PDF dan CSV
+* Backup/restore database SQLite
+* Light & Dark theme via SharedPreferences
+* BLoC + Freezed + Dartz pattern yang rapi sebagai pembelajaran
+* Navigator v1 sederhana tanpa routing library
+
+
+Tidak Termasuk (Out of Scope):
+* OCR / text recognition dari foto nota
+* Cloud sync / multi-device (butuh backend)
+* GPS tracking perjalanan
+* Push notification untuk reminder servis
+* Multi-bahasa (cukup Bahasa Indonesia)
+* Integrasi API harga BBM real-time
+* Social features (share, compare antar user)
+
+
+Potensi Upgrade (Upsell Materi Berbayar):
+* OCR scan nota dengan Google ML Kit
+* Cloud sync dengan Firebase / Supabase
+* GPS trip logging & route recording
+* Local notification reminder servis
+* Multi-language support
+* Monetisasi: Google Ads integration
+* Migration ke Clean Architecture full layer (untuk yang mau scale up)
+8. Nilai Edukasi untuk Peserta
+Source code ini dirancang agar peserta belajar banyak hal praktis tanpa tenggelam di boilerplate:
+
+
+Topik
+	Implementasi di KendaraanKu
+	BLoC Pattern
+	Event → BLoC → State di setiap fitur, konsisten dan predictable
+	Freezed + Dartz
+	Union types untuk State, Either untuk error handling
+	SQLite (Sqflite)
+	Schema design, migrations, query dengan JOIN, singleton pattern
+	SharedPreferences
+	Settings persistence sederhana tanpa overhead
+	Camera Integration
+	image_picker, compress, save ke app directory
+	Charts (fl_chart)
+	Line, bar, pie chart dari data real SQLite
+	PDF Generation
+	Programmatic PDF creation, share via share sheet
+	Theming
+	Light/dark theme toggle dengan SharedPreferences
+	Form Handling
+	TextFormField + validators + auto-calculate fields
+	Navigator v1
+	push, pop, pushReplacement, pass data & receive result
+	File Management
+	Save, read, delete image files di app documents directory
+	Backup/Restore
+	Copy SQLite .db file, import dari external storage
+	9. Estimasi Development
+
+
+Fase
+	Durasi
+	Deliverable
+	Setup & Foundation
+	0.5 hari
+	Project, theme, constants, DatabaseHelper, SharedPreferences setup
+	Modul Kendaraan
+	1 hari
+	CRUD vehicle + foto + list card UI + BLoC
+	Modul BBM
+	1.5 hari
+	CRUD fuel log + foto nota + kalkulasi konsumsi + BLoC
+	Modul Servis
+	1 hari
+	CRUD service log + kategori + foto kwitansi + BLoC
+	Dashboard & Statistik
+	1.5 hari
+	Dashboard UI + fl_chart grafik + filter periode
+	Export & Settings
+	1 hari
+	PDF export, CSV, backup/restore, theme toggle
+	Polish & Testing
+	0.5 hari
+	Bug fixing, UI polish, README, demo preparation
+	TOTAL
+	7 hari
+	Production-ready source code + demo app
+	10. Outline Demo untuk SharingSession
+Durasi estimasi: 60–90 menit live coding + presentasi.
+
+
+1. Opening (5 menit): Kenalkan app, tunjukkan demo jadi di device/emulator
+2. Architecture Overview (10 menit): Jelaskan folder structure, kenapa simpel 2 layer, kenapa Navigator v1
+3. Live Demo — Tambah Kendaraan (10 menit): Flow dari UI → BLoC → Repository → SQLite
+4. Live Demo — Catat BBM + Foto Nota (15 menit): Form input, kamera, kalkulasi otomatis
+5. Live Demo — Dashboard & Grafik (10 menit): fl_chart, statistik, filter periode
+6. Code Walkthrough (15 menit): BLoC + Freezed pattern, Dartz Either, SQLite queries
+7. Q&A (15 menit): Diskusi terbuka, ide pengembangan, tanya jawab
+8. Closing: Bagikan source code, promo Academy JagoFlutter Batch berikutnya
+
+
+
+
+Dokumen ini adalah Product Requirements Document untuk aplikasi KendaraanKu v1.1 (simplified stack), disiapkan sebagai bagian dari SharingSession JagoFlutter free event. Source code yang dihasilkan dari PRD ini akan menjadi bonus untuk seluruh peserta event.

@@ -1,0 +1,73 @@
+name: flutter_kendaraanku_app
+description: "Kendaraanku — aplikasi pencatatan kendaraan pribadi 100% offline: BBM, servis, dokumen kendaraan, scan nota OCR, dan laporan ekspor PDF/CSV."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.5
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  google_fonts: ^6.2.1
+  flutter_svg: ^2.0.17
+  intl: ^0.20.2
+  # Phase 0
+  flutter_bloc: ^9.0.0
+  freezed_annotation: ^2.4.4
+  dartz: ^0.10.1
+  sqflite: ^2.4.1
+  path_provider: ^2.1.5
+  shared_preferences: ^2.5.1
+  image_picker: ^1.1.2
+  fl_chart: ^0.70.2
+  pdf: ^3.11.3
+  printing: ^5.14.2
+  csv: ^6.0.0
+  path: ^1.9.1
+  flutter_image_compress: ^2.4.0
+  google_mlkit_text_recognition: ^0.15.0
+  share_plus: ^10.1.4
+  flutter_local_notifications: ^18.0.1
+  timezone: ^0.10.0
+  flutter_timezone: ^3.0.1
+  permission_handler: ^11.3.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  build_runner: ^2.4.14
+  freezed: ^2.5.8
+  flutter_launcher_icons: ^0.14.1
+  flutter_native_splash: ^2.4.1
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/
+    - assets/icons/
+    - assets/images/
+
+# ─── Launcher icon — run: dart run flutter_launcher_icons ────────────────────
+flutter_launcher_icons:
+  android: "ic_launcher"
+  ios: true
+  image_path: "assets/branding/app_icon.png"
+  min_sdk_android: 21
+  adaptive_icon_background: "#4A7BF7"
+  adaptive_icon_foreground: "assets/branding/app_icon_foreground.png"
+  remove_alpha_ios: true
+
+# ─── Native splash — run: dart run flutter_native_splash:create ──────────────
+flutter_native_splash:
+  color: "#4A7BF7"
+  image: "assets/branding/splash_logo.png"
+  android_12:
+    color: "#4A7BF7"
+    image: "assets/branding/splash_logo.png"
+  android: true
+  ios: true
+  fullscreen: true

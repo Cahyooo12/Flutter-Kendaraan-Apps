@@ -1,0 +1,286 @@
+/* Kendaraanku — Design Tokens */
+:root {
+  /* Primary palette (Soft Blue — default) */
+  --primary: #3D6BF5;
+  --primary-strong: #2A52D8;
+  --primary-soft: #E8EEFE;
+  --primary-softer: #F2F5FF;
+  --on-primary: #FFFFFF;
+
+  /* Surface */
+  --bg: #F5F7FB;
+  --surface: #FFFFFF;
+  --surface-2: #F8FAFD;
+  --hero-bg: linear-gradient(135deg, #4A7BF7 0%, #6B95FA 100%);
+  --hero-bg-vertical: linear-gradient(180deg, #4A7BF7 0%, #6B95FA 100%);
+  --hero-top: #4A7BF7;
+  --hero-accent: rgba(255,255,255,0.18);
+
+  /* Text */
+  --text: #0F1B33;
+  --text-muted: #6B7689;
+  --text-soft: #97A0B3;
+  --divider: #ECEFF5;
+  --border: #E5E9F2;
+
+  /* Pastel accents */
+  --tint-blue:    #E8EEFE;  --on-tint-blue:    #2A52D8;
+  --tint-mint:    #E1F4EC;  --on-tint-mint:    #1F8F66;
+  --tint-peach:   #FCE9DC;  --on-tint-peach:   #C75F22;
+  --tint-lavender:#ECE8FB;  --on-tint-lavender:#6B49C8;
+  --tint-rose:    #FBE5EC;  --on-tint-rose:    #C73D6A;
+  --tint-amber:   #FBF1D8;  --on-tint-amber:   #9B7A1F;
+
+  /* Status */
+  --success: #1F8F66;
+  --warning: #C7841F;
+  --danger:  #D2475A;
+
+  /* Shadow */
+  --shadow-sm: 0 1px 2px rgba(15,27,51,0.04), 0 1px 1px rgba(15,27,51,0.03);
+  --shadow:    0 4px 14px rgba(15,27,51,0.06), 0 1px 3px rgba(15,27,51,0.04);
+  --shadow-lg: 0 14px 32px rgba(15,27,51,0.10), 0 4px 10px rgba(15,27,51,0.05);
+
+  /* Radii */
+  --r-sm: 10px;
+  --r:    14px;
+  --r-lg: 20px;
+  --r-xl: 28px;
+}
+
+/* Theme variants */
+[data-theme="mint"] {
+  --primary: #1F8F66;
+  --primary-strong: #176C4D;
+  --primary-soft: #DEF2E8;
+  --primary-softer: #EEFBF4;
+  --hero-bg: linear-gradient(135deg, #28A579 0%, #4FC09B 100%);
+  --hero-bg-vertical: linear-gradient(180deg, #28A579 0%, #4FC09B 100%);
+  --hero-top: #28A579;
+}
+[data-theme="peach"] {
+  --primary: #E36B33;
+  --primary-strong: #BE521F;
+  --primary-soft: #FCE3D2;
+  --primary-softer: #FFF3EA;
+  --hero-bg: linear-gradient(135deg, #ED7A45 0%, #F8A777 100%);
+  --hero-bg-vertical: linear-gradient(180deg, #ED7A45 0%, #F8A777 100%);
+  --hero-top: #ED7A45;
+}
+[data-theme="lavender"] {
+  --primary: #6B49C8;
+  --primary-strong: #533794;
+  --primary-soft: #E5DDF7;
+  --primary-softer: #F2EEFB;
+  --hero-bg: linear-gradient(135deg, #7C5BD5 0%, #A48AE8 100%);
+  --hero-bg-vertical: linear-gradient(180deg, #7C5BD5 0%, #A48AE8 100%);
+  --hero-top: #7C5BD5;
+}
+
+/* Screen base */
+.kdr {
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  width: 100%;
+  height: 100%;
+  font-size: 14px;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: -0.01em;
+}
+.kdr * { box-sizing: border-box; }
+.kdr-scroll {
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.kdr-body {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 12px;
+}
+.kdr-body::-webkit-scrollbar { width: 0; }
+
+/* Typography */
+.kdr h1, .kdr h2, .kdr h3, .kdr h4, .kdr p { margin: 0; }
+.kdr-h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+.kdr-h2 { font-size: 18px; font-weight: 700; letter-spacing: -0.02em; }
+.kdr-h3 { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; }
+.kdr-label { font-size: 12px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.02em; text-transform: uppercase; }
+.kdr-meta { font-size: 12px; color: var(--text-muted); }
+.kdr-num { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+
+/* Card */
+.kdr-card {
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+}
+
+/* Pill / chip */
+.kdr-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--surface);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  white-space: nowrap;
+}
+.kdr-chip.active {
+  background: var(--text);
+  color: white;
+  border-color: var(--text);
+}
+.kdr-chip.tint {
+  background: var(--primary-soft);
+  color: var(--primary-strong);
+  border-color: transparent;
+}
+
+/* Button */
+.kdr-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 12px 16px;
+  border-radius: var(--r);
+  font-size: 14px; font-weight: 600;
+  border: none; cursor: pointer;
+  font-family: inherit;
+  letter-spacing: -0.01em;
+}
+.kdr-btn.primary { background: var(--primary); color: var(--on-primary); }
+.kdr-btn.ghost   { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+.kdr-btn.soft    { background: var(--primary-soft); color: var(--primary-strong); }
+
+/* App bar */
+.kdr-appbar {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px 8px;
+  background: var(--bg);
+  position: sticky; top: 0; z-index: 5;
+}
+.kdr-iconbtn {
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+.kdr-iconbtn.flat { background: transparent; border: none; }
+
+/* Bottom nav — 4 tab evenly spaced */
+.kdr-nav {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 10px 4px 14px;
+  position: relative;
+  z-index: 2;
+}
+.kdr-nav-item {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 6px 4px;
+  color: var(--text-soft);
+  font-size: 11px; font-weight: 600;
+  background: none; border: none; font-family: inherit;
+}
+.kdr-nav-item.active { color: var(--primary); }
+.kdr-nav-item .nav-icon {
+  width: 44px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 100px;
+  transition: background 0.2s;
+}
+.kdr-nav-item.active .nav-icon {
+  background: var(--primary-soft);
+}
+
+/* Extended FAB — melayang di atas bottom nav (kanan bawah) */
+.kdr-fab {
+  position: absolute;
+  right: 16px;
+  bottom: 88px;
+  display: inline-flex; align-items: center; gap: 8px;
+  height: 52px;
+  padding: 0 20px 0 18px;
+  border-radius: 100px;
+  background: var(--primary);
+  color: white;
+  font-family: inherit;
+  font-size: 14px; font-weight: 700;
+  letter-spacing: -0.01em;
+  box-shadow: 0 10px 24px rgba(15,27,51,0.18), 0 2px 6px rgba(15,27,51,0.10);
+  border: none;
+  z-index: 3;
+}
+.kdr-fab:active { transform: translateY(1px); }
+
+/* Hero vehicle card */
+.kdr-hero {
+  background: var(--hero-bg);
+  border-radius: var(--r-xl);
+  padding: 18px;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+.kdr-hero::before {
+  content: '';
+  position: absolute;
+  right: -40px; top: -40px;
+  width: 160px; height: 160px;
+  border-radius: 50%;
+  background: var(--hero-accent);
+}
+.kdr-hero::after {
+  content: '';
+  position: absolute;
+  right: 40px; bottom: -60px;
+  width: 120px; height: 120px;
+  border-radius: 50%;
+  background: var(--hero-accent);
+}
+
+/* Divider */
+.kdr-divider { height: 1px; background: var(--divider); margin: 4px 0; }
+
+/* Status pill */
+.kdr-status {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 10px;
+  border-radius: 100px;
+  font-size: 11px; font-weight: 700;
+}
+.kdr-status .dot { width: 6px; height: 6px; border-radius: 50%; }
+.kdr-status.ok   { background: var(--tint-mint); color: var(--on-tint-mint); }
+.kdr-status.warn { background: var(--tint-amber); color: var(--on-tint-amber); }
+.kdr-status.due  { background: var(--tint-rose); color: var(--on-tint-rose); }
+.kdr-status.ok   .dot { background: var(--on-tint-mint); }
+.kdr-status.warn .dot { background: var(--on-tint-amber); }
+.kdr-status.due  .dot { background: var(--on-tint-rose); }
+
+/* Tints */
+.tint-blue     { background: var(--tint-blue);     color: var(--on-tint-blue); }
+.tint-mint     { background: var(--tint-mint);     color: var(--on-tint-mint); }
+.tint-peach    { background: var(--tint-peach);    color: var(--on-tint-peach); }
+.tint-lavender { background: var(--tint-lavender); color: var(--on-tint-lavender); }
+.tint-rose     { background: var(--tint-rose);     color: var(--on-tint-rose); }
+.tint-amber    { background: var(--tint-amber);    color: var(--on-tint-amber); }
+
+/* Vehicle placeholder illustration */
+.kdr-vehicle-img {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,0.85);
+}

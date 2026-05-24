@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Kendaraanku — Sharing Session Overview</title>
+<style>
+  @page {
+    size: A4;
+    margin: 18mm 16mm 18mm 16mm;
+  }
+  @page :first {
+    margin: 0;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #1A2433;
+    font-size: 11pt;
+    line-height: 1.55;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* ───── Cover ───── */
+  .cover {
+    page-break-after: always;
+    height: 297mm;
+    width: 210mm;
+    background: linear-gradient(160deg, #4A7BF7 0%, #6B95FA 60%, #3D6BF5 100%);
+    color: white;
+    position: relative;
+    padding: 38mm 22mm;
+    overflow: hidden;
+  }
+  .cover::before {
+    content: "";
+    position: absolute;
+    right: -80px;
+    top: 80px;
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.10);
+  }
+  .cover::after {
+    content: "";
+    position: absolute;
+    left: -60px;
+    bottom: 120px;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+  }
+  .cover-content { position: relative; z-index: 1; }
+  .cover-badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.35);
+    font-size: 10pt;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    margin-bottom: 24px;
+  }
+  .cover-logo {
+    width: 96px;
+    height: 96px;
+    border-radius: 28px;
+    background: rgba(255,255,255,0.20);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 50px;
+    font-weight: 800;
+    margin-bottom: 28px;
+    color: white;
+  }
+  .cover h1 {
+    font-size: 52pt;
+    font-weight: 800;
+    margin: 0 0 8px 0;
+    letter-spacing: -1.4px;
+    line-height: 1.05;
+  }
+  .cover .tag {
+    font-size: 16pt;
+    font-weight: 500;
+    opacity: 0.92;
+    margin-bottom: 50px;
+  }
+  .cover .meta {
+    position: absolute;
+    bottom: 32mm;
+    left: 22mm;
+    right: 22mm;
+  }
+  .cover .meta .row {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-top: 1px solid rgba(255,255,255,0.25);
+    font-size: 11pt;
+  }
+  .cover .meta .label { opacity: 0.75; }
+  .cover .meta .value { font-weight: 600; }
+  .cover .footer {
+    position: absolute;
+    bottom: 14mm;
+    left: 22mm;
+    right: 22mm;
+    font-size: 9.5pt;
+    opacity: 0.8;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* ───── Headings ───── */
+  h2 {
+    font-size: 22pt;
+    font-weight: 800;
+    color: #1A2433;
+    letter-spacing: -0.6px;
+    margin: 28px 0 4px 0;
+    padding-bottom: 8px;
+    border-bottom: 3px solid #3D6BF5;
+    page-break-after: avoid;
+  }
+  h2 .num {
+    color: #3D6BF5;
+    margin-right: 10px;
+  }
+  h3 {
+    font-size: 14pt;
+    font-weight: 700;
+    color: #2A3B55;
+    margin: 22px 0 8px 0;
+    page-break-after: avoid;
+  }
+  h4 {
+    font-size: 11pt;
+    font-weight: 700;
+    color: #3D6BF5;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 18px 0 6px 0;
+  }
+  p { margin: 8px 0; }
+  ul, ol { margin: 8px 0; padding-left: 22px; }
+  li { margin: 4px 0; }
+  strong { color: #1A2433; font-weight: 700; }
+  code {
+    background: #F1F4FB;
+    color: #2C3E66;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: 9.5pt;
+  }
+
+  /* ───── Section intro ───── */
+  .lead {
+    font-size: 12pt;
+    color: #4A5568;
+    margin: 6px 0 18px 0;
+  }
+
+  /* ───── Cards / Grid ───── */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 12px 0;
+  }
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin: 12px 0;
+  }
+  .card {
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+    padding: 14px 16px;
+    background: #FAFBFD;
+    page-break-inside: avoid;
+  }
+  .card .title {
+    font-weight: 700;
+    color: #1A2433;
+    font-size: 11pt;
+    margin-bottom: 4px;
+  }
+  .card .desc {
+    font-size: 9.5pt;
+    color: #5A6478;
+    line-height: 1.5;
+  }
+  .card.blue   { background: #EEF3FE; border-color: #C7D7F9; }
+  .card.mint   { background: #E7F8F2; border-color: #BFE9D7; }
+  .card.peach  { background: #FDEEE5; border-color: #F7CDB3; }
+  .card.lav    { background: #F0EBFA; border-color: #D4C7F0; }
+  .card.rose   { background: #FBE9EE; border-color: #F1BFCE; }
+  .card.amber  { background: #FCF3DA; border-color: #F2DC9C; }
+
+  /* ───── Tech stack table ───── */
+  table.tech {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0 16px 0;
+    font-size: 10pt;
+  }
+  table.tech th {
+    background: #3D6BF5;
+    color: white;
+    font-weight: 700;
+    text-align: left;
+    padding: 10px 12px;
+    font-size: 9.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  table.tech th:first-child { border-top-left-radius: 10px; }
+  table.tech th:last-child  { border-top-right-radius: 10px; }
+  table.tech td {
+    padding: 9px 12px;
+    border-bottom: 1px solid #ECEFF5;
+    vertical-align: top;
+  }
+  table.tech tr:nth-child(even) td { background: #F7F9FD; }
+  table.tech td.layer {
+    font-weight: 700;
+    color: #3D6BF5;
+    white-space: nowrap;
+  }
+  table.tech td.lib { font-family: 'SF Mono', Menlo, monospace; font-size: 9pt; color: #2C3E66; }
+
+  /* ───── Flow ───── */
+  .flow {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 14px 0;
+  }
+  .flow-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 14px;
+    background: #F7F9FD;
+    border-left: 4px solid #3D6BF5;
+    border-radius: 0 10px 10px 0;
+    page-break-inside: avoid;
+  }
+  .flow-step .step-num {
+    flex: 0 0 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #3D6BF5;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 10pt;
+  }
+  .flow-step .step-body { flex: 1; }
+  .flow-step .step-title { font-weight: 700; color: #1A2433; font-size: 10.5pt; }
+  .flow-step .step-desc  { font-size: 9.5pt; color: #5A6478; margin-top: 2px; }
+
+  /* ───── Code block ───── */
+  pre {
+    background: #1A2433;
+    color: #E2E8F0;
+    padding: 14px 16px;
+    border-radius: 10px;
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: 9pt;
+    line-height: 1.55;
+    overflow-x: auto;
+    margin: 12px 0;
+    page-break-inside: avoid;
+  }
+  pre .cmt { color: #7A8AA8; }
+  pre .key { color: #84B6F4; }
+
+  /* ───── Schema ───── */
+  table.schema {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 6px 0 14px 0;
+    font-size: 9.5pt;
+  }
+  table.schema th, table.schema td {
+    padding: 7px 10px;
+    border: 1px solid #E2E8F0;
+    text-align: left;
+    vertical-align: top;
+  }
+  table.schema th {
+    background: #EEF3FE;
+    color: #2A3B55;
+    font-weight: 700;
+    font-size: 9pt;
+  }
+  table.schema td.col { font-family: 'SF Mono', Menlo, monospace; font-size: 9pt; color: #2C3E66; white-space: nowrap; }
+  table.schema td.typ { font-family: 'SF Mono', Menlo, monospace; font-size: 9pt; color: #3D6BF5; white-space: nowrap; }
+
+  /* ───── Misc ───── */
+  .pill {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: #EEF3FE;
+    color: #3D6BF5;
+    font-size: 9pt;
+    font-weight: 600;
+    margin-right: 6px;
+  }
+  .pill.green { background: #E7F8F2; color: #1F8F62; }
+  .pill.amber { background: #FCF3DA; color: #9B7A1B; }
+
+  .callout {
+    border-left: 4px solid #3D6BF5;
+    background: #EEF3FE;
+    padding: 12px 16px;
+    border-radius: 0 10px 10px 0;
+    margin: 14px 0;
+    font-size: 10pt;
+    page-break-inside: avoid;
+  }
+  .callout strong { color: #2A4DA8; }
+
+  .page-break { page-break-before: always; }
+
+  .toc {
+    margin: 14px 0 24px 0;
+  }
+  .toc-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px dashed #D6DCE8;
+    font-size: 10.5pt;
+  }
+  .toc-item .t { color: #1A2433; font-weight: 600; }
+  .toc-item .n { color: #3D6BF5; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<!-- ═════════ COVER ═════════ -->
+<section class="cover">
+  <div class="cover-content">
+    <div class="cover-badge">SharingSession JagoFlutter · Free Event</div>
+    <div class="cover-logo">K</div>
+    <h1>Kendaraanku</h1>
+    <div class="tag">Aplikasi Pencatatan Kendaraan Pribadi — 100% Offline</div>
+  </div>
+  <div class="meta">
+    <div class="row"><span class="label">Framework</span><span class="value">Flutter 3.x + BLoC</span></div>
+    <div class="row"><span class="label">Database</span><span class="value">SQLite (Sqflite)</span></div>
+    <div class="row"><span class="label">Versi</span><span class="value">1.0.0+1</span></div>
+    <div class="row"><span class="label">Tanggal</span><span class="value">24 Mei 2026</span></div>
+  </div>
+  <div class="footer">
+    <span>Demo + Bonus Source Code</span>
+    <span>Prepared by: JagoFlutter Academy</span>
+  </div>
+</section>
+
+<!-- ═════════ TOC ═════════ -->
+<h2><span class="num">·</span>Daftar Isi</h2>
+<div class="toc">
+  <div class="toc-item"><span class="t">1. Tentang Kendaraanku</span><span class="n">03</span></div>
+  <div class="toc-item"><span class="t">2. Tech Stack</span><span class="n">04</span></div>
+  <div class="toc-item"><span class="t">3. Fitur Utama</span><span class="n">05</span></div>
+  <div class="toc-item"><span class="t">4. Arsitektur Aplikasi</span><span class="n">06</span></div>
+  <div class="toc-item"><span class="t">5. Database Schema</span><span class="n">07</span></div>
+  <div class="toc-item"><span class="t">6. Flow Fitur (User Journey)</span><span class="n">08</span></div>
+  <div class="toc-item"><span class="t">7. Cara Menjalankan Aplikasi</span><span class="n">10</span></div>
+</div>
+
+<!-- ═════════ 1. TENTANG ═════════ -->
+<h2><span class="num">01</span>Tentang Kendaraanku</h2>
+<p class="lead">Mobile app Flutter untuk mencatat seluruh aktivitas dan pengeluaran kendaraan pribadi — bensin, servis, dokumen, sampai scan nota — semua tersimpan lokal di device tanpa perlu internet.</p>
+
+<div class="grid-3">
+  <div class="card blue">
+    <div class="title">Multi-Kendaraan</div>
+    <div class="desc">Kelola beberapa kendaraan (motor, mobil, lainnya) sekaligus dalam satu aplikasi.</div>
+  </div>
+  <div class="card mint">
+    <div class="title">100% Offline</div>
+    <div class="desc">Tidak butuh internet. Semua data tersimpan lokal di device pengguna via SQLite.</div>
+  </div>
+  <div class="card peach">
+    <div class="title">Scan Nota OCR</div>
+    <div class="desc">Foto struk SPBU / bengkel, ML Kit baca otomatis (total, liter, tanggal, dll).</div>
+  </div>
+  <div class="card lav">
+    <div class="title">Statistik &amp; Grafik</div>
+    <div class="desc">Lihat pengeluaran, konsumsi BBM rata-rata, dan tren bulanan via fl_chart.</div>
+  </div>
+  <div class="card rose">
+    <div class="title">Dokumen Kendaraan</div>
+    <div class="desc">Simpan STNK, BPKB, SIM, asuransi, dan jadwal pajak — lengkap dengan foto.</div>
+  </div>
+  <div class="card amber">
+    <div class="title">Export Laporan</div>
+    <div class="desc">Generate laporan PDF rapi atau CSV untuk dibuka di spreadsheet.</div>
+  </div>
+</div>
+
+<div class="callout">
+  <strong>Filosofi Teknis.</strong> Source code sengaja dibuat <em>simpel dan straightforward</em>: tanpa DI framework, tanpa router declarative, tanpa abstraksi berlebihan. Tujuannya supaya peserta sharing session bisa langsung baca, paham, dan modifikasi tanpa harus belajar 5 library tambahan dulu.
+</div>
+
+<!-- ═════════ 2. TECH STACK ═════════ -->
+<div class="page-break"></div>
+<h2><span class="num">02</span>Tech Stack</h2>
+<p class="lead">Stack yang dipakai sesuai standar JagoFlutter — pragmatis dan production-ready.</p>
+
+<table class="tech">
+  <thead>
+    <tr>
+      <th style="width: 28%;">Layer</th>
+      <th style="width: 32%;">Library</th>
+      <th>Keterangan</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td class="layer">Framework</td><td class="lib">Flutter 3.x (sdk ^3.11.5)</td><td>Cross-platform Android &amp; iOS</td></tr>
+    <tr><td class="layer">State Management</td><td class="lib">flutter_bloc · freezed · dartz</td><td>BLoC pattern standar JagoFlutter</td></tr>
+    <tr><td class="layer">Local Database</td><td class="lib">sqflite · path</td><td>SQLite wrapper — vehicles, fuel_logs, service_logs, dokumen</td></tr>
+    <tr><td class="layer">Key-Value Storage</td><td class="lib">shared_preferences</td><td>Session login &amp; flag onboarding</td></tr>
+    <tr><td class="layer">Camera &amp; Gambar</td><td class="lib">image_picker · flutter_image_compress</td><td>Ambil foto, compress 1280px @ 80% sebelum simpan</td></tr>
+    <tr><td class="layer">OCR Nota</td><td class="lib">google_mlkit_text_recognition</td><td>Baca total, liter, tanggal dari struk bengkel/SPBU</td></tr>
+    <tr><td class="layer">Charts</td><td class="lib">fl_chart</td><td>Grafik pengeluaran &amp; konsumsi BBM bulanan</td></tr>
+    <tr><td class="layer">Export PDF</td><td class="lib">pdf · printing</td><td>Generate laporan PDF rapi dari data lokal</td></tr>
+    <tr><td class="layer">Export CSV</td><td class="lib">csv</td><td>Data tabular untuk spreadsheet</td></tr>
+    <tr><td class="layer">Navigation</td><td class="lib">Navigator v1 (push/pop)</td><td>Tidak pakai go_router — simpel &amp; mudah dipahami</td></tr>
+    <tr><td class="layer">Path &amp; Storage</td><td class="lib">path_provider</td><td>Akses app documents directory untuk foto</td></tr>
+    <tr><td class="layer">Typography</td><td class="lib">google_fonts (Plus Jakarta Sans)</td><td>Numeric tabular figures, weight 400/500/700/800</td></tr>
+    <tr><td class="layer">Lokalisasi</td><td class="lib">intl (id_ID)</td><td>Format tanggal &amp; rupiah Indonesia</td></tr>
+  </tbody>
+</table>
+
+<h3>Yang Sengaja TIDAK Dipakai</h3>
+<div class="grid-2">
+  <div class="card">
+    <div class="title">go_router / auto_route</div>
+    <div class="desc">Navigator.push/pop lebih mudah dipahami pemula. Tidak ada kebutuhan deep linking.</div>
+  </div>
+  <div class="card">
+    <div class="title">get_it + injectable</div>
+    <div class="desc">DI manual via constructor sudah cukup untuk skala aplikasi ini.</div>
+  </div>
+  <div class="card">
+    <div class="title">Hive / Isar</div>
+    <div class="desc">SharedPreferences cukup untuk settings ringan. Data relasional konsisten pakai SQLite.</div>
+  </div>
+  <div class="card">
+    <div class="title">Riverpod / Provider</div>
+    <div class="desc">Konsisten pakai BLoC sebagai state management utama di seluruh kurikulum JagoFlutter.</div>
+  </div>
+</div>
+
+<!-- ═════════ 3. FITUR ═════════ -->
+<div class="page-break"></div>
+<h2><span class="num">03</span>Fitur Utama</h2>
+<p class="lead">Aplikasi punya 4 tab utama (Home · Service · Docs · Profile) plus fitur scan nota dan export.</p>
+
+<h3>Authentication (Lokal)</h3>
+<ul>
+  <li><strong>Splash → Onboarding</strong> (first time) <strong>→ Register / Login</strong> — semua lokal, password di-hash &amp; simpan di tabel <code>users</code>.</li>
+  <li>Session disimpan di SharedPreferences. Logout = clear flag.</li>
+  <li>Edit profil + ganti foto profil dari kamera/galeri.</li>
+</ul>
+
+<h3>Tab 1 · Home (Dashboard)</h3>
+<ul>
+  <li><strong>Hero Card</strong> kendaraan aktif: plat, odometer, kapasitas tangki.</li>
+  <li><strong>Statistik bulan ini</strong>: total pengeluaran BBM, total servis, rata-rata konsumsi (km/liter).</li>
+  <li><strong>Chart fl_chart</strong>: tren pengeluaran 6 bulan terakhir.</li>
+  <li><strong>Switch kendaraan</strong> aktif lewat selector di atas. Riwayat BBM &amp; servis terbaru di bawah.</li>
+</ul>
+
+<h3>Tab 2 · Service (Servis &amp; BBM)</h3>
+<ul>
+  <li><strong>Catat BBM</strong>: tanggal, odometer, liter, harga/liter, total auto-calc, jenis BBM, SPBU, full-tank flag, foto struk.</li>
+  <li><strong>Catat Servis</strong>: jenis servis (10 kategori default), bengkel, biaya, kwitansi, reminder odometer/tanggal servis berikutnya.</li>
+  <li><strong>Scan nota</strong> dari halaman tambah — auto-fill field dari ML Kit OCR.</li>
+</ul>
+
+<h3>Tab 3 · Docs (Dokumen Kendaraan)</h3>
+<ul>
+  <li><strong>5 jenis dokumen</strong>: STNK, BPKB, SIM, Asuransi, Pajak.</li>
+  <li>Simpan nomor, tanggal terbit, tanggal expired, foto dokumen, catatan.</li>
+  <li>Empty state &amp; reminder untuk dokumen yang akan jatuh tempo.</li>
+</ul>
+
+<h3>Tab 4 · Profile</h3>
+<ul>
+  <li>Edit Profile · Theme · Language · Security · Backup · Help · About · T&amp;C · Privacy.</li>
+  <li><strong>Export</strong> data ke <strong>PDF</strong> (laporan rapi via package <code>pdf</code>) atau <strong>CSV</strong> (spreadsheet-ready).</li>
+</ul>
+
+<!-- ═════════ 4. ARSITEKTUR ═════════ -->
+<div class="page-break"></div>
+<h2><span class="num">04</span>Arsitektur Aplikasi</h2>
+<p class="lead">2 layer simpel: <strong>Data → Presentation</strong>. Tidak ada domain layer terpisah, tidak ada use case, tidak ada repository interface.</p>
+
+<h3>Folder Structure</h3>
+<pre><span class="key">lib/</span>
+├── <span class="key">data/</span>
+│   ├── models/              <span class="cmt"># Freezed models (vehicle, fuel_log, service_log, ...)</span>
+│   ├── repositories/        <span class="cmt"># SQLite query logic (5 repos)</span>
+│   ├── local/               <span class="cmt"># auth_local_datasource (SharedPreferences)</span>
+│   └── database_helper.dart <span class="cmt"># singleton DB helper</span>
+├── <span class="key">presentation/</span>
+│   ├── auth/                <span class="cmt"># splash · onboarding · login · register</span>
+│   ├── home/                <span class="cmt"># dashboard + main_navigation</span>
+│   ├── fuel/                <span class="cmt"># fuel page + add fuel</span>
+│   ├── service/             <span class="cmt"># service page + add service</span>
+│   ├── vehicle/             <span class="cmt"># add · edit · detail vehicle</span>
+│   ├── docs/                <span class="cmt"># list dokumen + add document</span>
+│   ├── scan/                <span class="cmt"># OCR scan receipt page</span>
+│   ├── profile/             <span class="cmt"># 10 menu profil</span>
+│   ├── settings/            <span class="cmt"># export PDF/CSV</span>
+│   ├── notifications/       <span class="cmt"># notifications page</span>
+│   └── blocs/               <span class="cmt"># vehicle, fuel_log, service_log, dashboard, vehicle_document</span>
+├── <span class="key">core/</span>
+│   ├── constants/           <span class="cmt"># colors, strings, enums</span>
+│   ├── components/          <span class="cmt"># reusable widgets (bottom_nav, dll)</span>
+│   ├── extensions/          <span class="cmt"># context, int, string, datetime</span>
+│   ├── utils/               <span class="cmt"># formatters, image helper</span>
+│   └── theme.dart           <span class="cmt"># light &amp; dark theme</span>
+└── main.dart</pre>
+
+<h3>Alur Data (Linear &amp; Mudah Di-trace)</h3>
+<div class="flow">
+  <div class="flow-step"><div class="step-num">1</div>
+    <div class="step-body"><div class="step-title">Page dispatch Event ke BLoC</div>
+    <div class="step-desc">User tap tombol di UI → <code>context.read&lt;FuelLogBloc&gt;().add(AddFuelLog(...))</code></div></div></div>
+  <div class="flow-step"><div class="step-num">2</div>
+    <div class="step-body"><div class="step-title">BLoC panggil Repository</div>
+    <div class="step-desc">Bloc langsung instantiate Repository via constructor (no DI framework)</div></div></div>
+  <div class="flow-step"><div class="step-num">3</div>
+    <div class="step-body"><div class="step-title">Repository execute query SQLite</div>
+    <div class="step-desc">Via <code>DatabaseHelper.getInstance()</code> singleton — pure CRUD</div></div></div>
+  <div class="flow-step"><div class="step-num">4</div>
+    <div class="step-body"><div class="step-title">BLoC emit State baru</div>
+    <div class="step-desc">State pakai Freezed sealed class (loading / loaded / error)</div></div></div>
+  <div class="flow-step"><div class="step-num">5</div>
+    <div class="step-body"><div class="step-title">BlocBuilder rebuild UI</div>
+    <div class="step-desc">UI react ke perubahan state — Navigator.pop(true) untuk refresh parent</div></div></div>
+</div>
+
+<!-- ═════════ 5. DATABASE ═════════ -->
+<div class="page-break"></div>
+<h2><span class="num">05</span>Database Schema</h2>
+<p class="lead">SQLite via <code>sqflite</code>. 6 tabel utama, semua relasional via foreign key ke <code>vehicles.id</code> atau <code>users.id</code>.</p>
+
+<h4>users</h4>
+<table class="schema"><tr><th>Kolom</th><th>Tipe</th><th>Keterangan</th></tr>
+<tr><td class="col">id</td><td class="typ">INTEGER PK</td><td>Auto increment</td></tr>
+<tr><td class="col">name · email · password</td><td class="typ">TEXT</td><td>Email unique, password di-hash</td></tr>
+<tr><td class="col">image_path</td><td class="typ">TEXT?</td><td>Foto profil (nullable)</td></tr>
+<tr><td class="col">created_at · updated_at</td><td class="typ">TEXT</td><td>ISO 8601</td></tr>
+</table>
+
+<h4>vehicles</h4>
+<table class="schema"><tr><th>Kolom</th><th>Tipe</th><th>Keterangan</th></tr>
+<tr><td class="col">id · user_id</td><td class="typ">INTEGER</td><td>FK ke users</td></tr>
+<tr><td class="col">name · type · brand · model</td><td class="typ">TEXT</td><td>Identitas kendaraan</td></tr>
+<tr><td class="col">year · plate_number · color</td><td class="typ">INT / TEXT</td><td>Detail registrasi</td></tr>
+<tr><td class="col">initial_odometer · tank_capacity</td><td class="typ">REAL</td><td>Spesifikasi awal</td></tr>
+<tr><td class="col">fuel_type · is_active · notes</td><td class="typ">TEXT / INT</td><td>Pertalite default, soft archive</td></tr>
+<tr><td class="col">image_path</td><td class="typ">TEXT?</td><td>Foto kendaraan</td></tr>
+</table>
+
+<h4>fuel_logs</h4>
+<table class="schema"><tr><th>Kolom</th><th>Tipe</th><th>Keterangan</th></tr>
+<tr><td class="col">id · vehicle_id</td><td class="typ">INTEGER</td><td>FK ke vehicles</td></tr>
+<tr><td class="col">date · odometer · liters</td><td class="typ">TEXT / REAL</td><td>Data utama isi BBM</td></tr>
+<tr><td class="col">price_per_liter · total_cost</td><td class="typ">REAL</td><td>Total auto-calculate</td></tr>
+<tr><td class="col">fuel_type · station_name · is_full_tank</td><td class="typ">TEXT / INT</td><td>Detail SPBU</td></tr>
+<tr><td class="col">receipt_image_path</td><td class="typ">TEXT?</td><td>Foto struk SPBU</td></tr>
+</table>
+
+<h4>service_logs</h4>
+<table class="schema"><tr><th>Kolom</th><th>Tipe</th><th>Keterangan</th></tr>
+<tr><td class="col">id · vehicle_id</td><td class="typ">INTEGER</td><td>FK ke vehicles</td></tr>
+<tr><td class="col">date · odometer · service_type</td><td class="typ">TEXT / REAL</td><td>Kategori: oli, ban, tune-up, dll</td></tr>
+<tr><td class="col">description · cost · workshop_name</td><td class="typ">TEXT / REAL</td><td>Detail pekerjaan</td></tr>
+<tr><td class="col">next_service_odometer · next_service_date</td><td class="typ">REAL? / TEXT?</td><td>Reminder servis berikutnya</td></tr>
+<tr><td class="col">receipt_image_path</td><td class="typ">TEXT?</td><td>Foto kwitansi bengkel</td></tr>
+</table>
+
+<h4>vehicle_documents</h4>
+<table class="schema"><tr><th>Kolom</th><th>Tipe</th><th>Keterangan</th></tr>
+<tr><td class="col">id · vehicle_id</td><td class="typ">INTEGER</td><td>FK ke vehicles</td></tr>
+<tr><td class="col">document_type · document_number</td><td class="typ">TEXT</td><td>STNK / BPKB / SIM / Asuransi / Pajak</td></tr>
+<tr><td class="col">issue_date · expiry_date</td><td class="typ">TEXT?</td><td>Tanggal terbit &amp; kadaluarsa</td></tr>
+<tr><td class="col">image_path · notes</td><td class="typ">TEXT?</td><td>Foto dokumen + catatan</td></tr>
+</table>
+
+<h4>expense_categories <span class="pill">seeded</span></h4>
+<p style="font-size:9.5pt; color:#5A6478; margin-top:4px;">10 kategori default sudah di-insert otomatis saat onCreate: Ganti Oli Mesin, Ganti Oli Gardan, Ganti Ban, Tune Up / Servis Rutin, Ganti Aki, Ganti Kampas Rem, Ganti V-Belt, Servis AC, Perpanjang STNK / Pajak, Lain-lain.</p>
+
+<!-- ═════════ 6. FLOW FITUR ═════════ -->
+<div class="page-break"></div>
+<h2><span class="num">06</span>Flow Fitur (User Journey)</h2>
+<p class="lead">Flow utama yang akan didemo di sharing session — dari pertama install sampai bisa export laporan.</p>
+
+<h3>Flow A · First Time User → Catat BBM Pertama</h3>
+<div class="flow">
+  <div class="flow-step"><div class="step-num">1</div>
+    <div class="step-body"><div class="step-title">Splash Page</div>
+    <div class="step-desc">Cek flag <code>isFirstTime</code> &amp; <code>isLoggedIn</code> di SharedPreferences (delay 2 detik).</div></div></div>
+  <div class="flow-step"><div class="step-num">2</div>
+    <div class="step-body"><div class="step-title">Onboarding</div>
+    <div class="step-desc">3 slide intro fitur. Setelah selesai, set <code>isFirstTime = false</code>.</div></div></div>
+  <div class="flow-step"><div class="step-num">3</div>
+    <div class="step-body"><div class="step-title">Register</div>
+    <div class="step-desc">Form name + email + password + checkbox T&amp;C. Insert ke tabel <code>users</code>, set session.</div></div></div>
+  <div class="flow-step"><div class="step-num">4</div>
+    <div class="step-body"><div class="step-title">Add Vehicle</div>
+    <div class="step-desc">User wajib tambah kendaraan pertama — nama, plat, brand, tipe BBM, odometer awal, foto.</div></div></div>
+  <div class="flow-step"><div class="step-num">5</div>
+    <div class="step-body"><div class="step-title">Home (Dashboard)</div>
+    <div class="step-desc">Hero card kendaraan + statistik bulan ini + chart 6 bulan. Empty state karena belum ada catatan.</div></div></div>
+  <div class="flow-step"><div class="step-num">6</div>
+    <div class="step-body"><div class="step-title">FAB → Catat BBM</div>
+    <div class="step-desc">Pilih tanggal, isi odometer, liter, harga/liter. Total auto-calc realtime.</div></div></div>
+  <div class="flow-step"><div class="step-num">7</div>
+    <div class="step-body"><div class="step-title">Optional: Scan Nota</div>
+    <div class="step-desc">Tap "Scan Struk" → buka kamera → ML Kit OCR baca total, liter, tanggal → auto-fill form.</div></div></div>
+  <div class="flow-step"><div class="step-num">8</div>
+    <div class="step-body"><div class="step-title">Simpan</div>
+    <div class="step-desc">Foto di-compress 1280px@80%, save ke app dir. Row insert ke <code>fuel_logs</code>. Pop back ke Home, dashboard auto-refresh.</div></div></div>
+</div>
+
+<h3>Flow B · Catat Servis + Set Reminder</h3>
+<div class="flow">
+  <div class="flow-step"><div class="step-num">1</div>
+    <div class="step-body"><div class="step-title">Tab Service → FAB Add</div>
+    <div class="step-desc">Pilih jenis servis dari 10 kategori default (Ganti Oli, Tune Up, dll).</div></div></div>
+  <div class="flow-step"><div class="step-num">2</div>
+    <div class="step-body"><div class="step-title">Isi Detail Servis</div>
+    <div class="step-desc">Tanggal, odometer, bengkel, biaya, deskripsi. Optional foto kwitansi.</div></div></div>
+  <div class="flow-step"><div class="step-num">3</div>
+    <div class="step-body"><div class="step-title">Set Reminder Servis Berikutnya</div>
+    <div class="step-desc">Isi <code>next_service_odometer</code> (mis. odometer sekarang + 2.500 km) atau tanggal.</div></div></div>
+  <div class="flow-step"><div class="step-num">4</div>
+    <div class="step-body"><div class="step-title">Save</div>
+    <div class="step-desc">Insert ke <code>service_logs</code>. Reminder muncul di dashboard saat odometer/tanggal mendekati target.</div></div></div>
+</div>
+
+<h3>Flow C · Tambah Dokumen Kendaraan</h3>
+<div class="flow">
+  <div class="flow-step"><div class="step-num">1</div>
+    <div class="step-body"><div class="step-title">Tab Docs → Pilih Tipe</div>
+    <div class="step-desc">STNK / BPKB / SIM / Asuransi / Pajak.</div></div></div>
+  <div class="flow-step"><div class="step-num">2</div>
+    <div class="step-body"><div class="step-title">Isi Form Dokumen</div>
+    <div class="step-desc">Nomor dokumen, tanggal terbit, tanggal expired, foto dokumen.</div></div></div>
+  <div class="flow-step"><div class="step-num">3</div>
+    <div class="step-body"><div class="step-title">Save</div>
+    <div class="step-desc">Insert ke <code>vehicle_documents</code>. Card dokumen muncul di Docs tab dengan badge expired/akan jatuh tempo.</div></div></div>
+</div>
+
+<h3>Flow D · Export Laporan PDF/CSV</h3>
+<div class="flow">
+  <div class="flow-step"><div class="step-num">1</div>
+    <div class="step-body"><div class="step-title">Profile → Export</div>
+    <div class="step-desc">Pilih kendaraan, range tanggal, format (PDF / CSV).</div></div></div>
+  <div class="flow-step"><div class="step-num">2</div>
+    <div class="step-body"><div class="step-title">Generate</div>
+    <div class="step-desc">Repository query semua fuel_logs &amp; service_logs dalam range → package <code>pdf</code> bikin dokumen rapi atau <code>csv</code> bikin spreadsheet.</div></div></div>
+  <div class="flow-step"><div class="step-num">3</div>
+    <div class="step-body"><div class="step-title">Share / Print</div>
+    <div class="step-desc">Package <code>printing</code> buka share sheet — kirim via WhatsApp / email / save ke Files.</div></div></div>
+</div>
+
+<!-- ═════════ 7. HOW TO RUN ═════════ -->
+<div class="page-break"></div>
+<h2><span class="num">07</span>Cara Menjalankan Aplikasi</h2>
+<p class="lead">Langkah-langkah dari clone repo sampai aplikasi jalan di device fisik / emulator.</p>
+
+<h3>Prasyarat</h3>
+<ul>
+  <li><strong>Flutter SDK 3.11.5</strong> atau lebih baru — cek dengan <code>flutter --version</code></li>
+  <li><strong>Android Studio</strong> + Android SDK + emulator, ATAU <strong>Xcode</strong> + iOS Simulator (macOS)</li>
+  <li><strong>Device fisik</strong> dengan USB debugging aktif (opsional, recommended untuk test kamera/OCR)</li>
+  <li><strong>JDK 17</strong> untuk Android build</li>
+</ul>
+
+<h3>Langkah 1 · Clone &amp; Install Dependencies</h3>
+<pre><span class="cmt"># Clone repo</span>
+git clone &lt;repo-url&gt; flutter_kendaraanku_app
+cd flutter_kendaraanku_app
+
+<span class="cmt"># Install dependencies</span>
+flutter pub get
+
+<span class="cmt"># Cek health Flutter — pastikan semua centang hijau</span>
+flutter doctor -v</pre>
+
+<h3>Langkah 2 · Generate Freezed Code</h3>
+<pre><span class="cmt"># Generate file *.freezed.dart untuk semua model &amp; state</span>
+dart run build_runner build --delete-conflicting-outputs</pre>
+
+<h3>Langkah 3 · (Opsional) Regenerate Icon &amp; Splash</h3>
+<pre><span class="cmt"># Hanya jika ganti file di assets/branding/</span>
+dart run flutter_launcher_icons
+dart run flutter_native_splash:create</pre>
+
+<h3>Langkah 4 · Jalankan Aplikasi</h3>
+<pre><span class="cmt"># Cek device yang ter-connect</span>
+flutter devices
+
+<span class="cmt"># Run di device default (debug mode)</span>
+flutter run
+
+<span class="cmt"># Run di device spesifik</span>
+flutter run -d &lt;device-id&gt;
+
+<span class="cmt"># Hot reload: tekan r di terminal. Hot restart: tekan R</span></pre>
+
+<h3>Langkah 5 · Build Release (Android)</h3>
+<pre><span class="cmt"># Setup keystore — lihat docs/RELEASE.md untuk detail</span>
+cp android/key.properties.template android/key.properties
+<span class="cmt"># Edit android/key.properties dengan path & password keystore</span>
+
+<span class="cmt"># Build APK (untuk testing langsung)</span>
+flutter build apk --release
+
+<span class="cmt"># Build App Bundle (untuk upload ke Play Store)</span>
+flutter build appbundle --release
+<span class="cmt"># Output: build/app/outputs/bundle/release/app-release.aab</span></pre>
+
+<div class="callout">
+  <strong>Tips Demo.</strong> Untuk demo sharing session, jalankan <code>flutter run --release</code> di device fisik supaya animasi smooth &amp; performance OCR ML Kit terasa beneran. Debug mode bisa lag saat scan nota.
+</div>
+
+<h3>Troubleshooting Singkat</h3>
+<div class="grid-2">
+  <div class="card">
+    <div class="title">Error: file .freezed.dart not found</div>
+    <div class="desc">Jalankan ulang <code>dart run build_runner build --delete-conflicting-outputs</code></div>
+  </div>
+  <div class="card">
+    <div class="title">OCR crash di release build</div>
+    <div class="desc">Pastikan ProGuard rule di <code>android/app/proguard-rules.pro</code> sudah include rule ML Kit.</div>
+  </div>
+  <div class="card">
+    <div class="title">Database error setelah update model</div>
+    <div class="desc">Uninstall app dari device, atau bump version di <code>database_helper.dart</code> &amp; tambah migration di <code>_onUpgrade</code>.</div>
+  </div>
+  <div class="card">
+    <div class="title">Foto tidak muncul setelah restart</div>
+    <div class="desc">Cek <code>image_path</code> di DB pakai absolute path dari <code>path_provider</code>. Path simulator bisa berubah saat hot restart.</div>
+  </div>
+</div>
+
+<div style="margin-top: 40px; text-align: center; color: #5A6478; font-size: 10pt;">
+  <hr style="border:0; border-top:1px solid #E2E8F0; margin: 24px 0;">
+  <strong>Kendaraanku</strong> · SharingSession JagoFlutter Free Event · 24 Mei 2026<br>
+  Demo Program + Bonus Source Code · Prepared by JagoFlutter Academy
+</div>
+
+</body>
+</html>
